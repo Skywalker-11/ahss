@@ -38,12 +38,16 @@ SOFTWARE.
 
 #define MOUSEFILE "/dev/input/mice"
 #define KEYBOARDFILE "/dev/input/event0"
+#define FGCONSOLE "/bin/fgconsole"
+#define TVSERVICEON "/opt/vc/bin/tvservice -p"
+#define TVSERVICEOFF "/opt/vc/bin/tvservice -o"
+#define CHVT "/bin/chvt %s"
 
 /*
 * writes the currenty tty console to currConsole
 */
 bool getCurrConsole (FILE* fp, char* currConsole){	
-	fp = popen("/bin/fgconsole", "r");
+	fp = popen(FGCONSOLE, "r");
 	if(fp == NULL) {
 		printf("WARNING: failed to get current display. You have manually switch the tty to get the display back.");
 		return false;
@@ -59,8 +63,12 @@ int main( int argc, char** argv )
 	int timeout = 30;
 
 	FILE *fp_fgconsole;
-	char currConsole[5];
-	char command_buf[30];
+	char currConsole[4];
+
+	char to_temp_tty[(sizeof(CHVT)/sizeof(CHVT[0])) +2];  //stores the command to switch to a temporary tty
+	sprintf(to_temp_tty, CHVT, "12");
+
+	char command_buf[(sizeof(CHVT)/sizeof(CHVT[0])) +4];  //stores the command to switch back to original tty
 
         int fd_mouse;
 	int fd_keyboard;
@@ -133,15 +141,15 @@ int main( int argc, char** argv )
 				bool success = getCurrConsole(fp_fgconsole, currConsole);
 
 				//turn the screen on
-				system ("/opt/vc/bin/tvservice -p");
+				system (TVSERVICEON);
 				system ("sudo xrefresh");
 				if(success) { 
 					//if the current tty could be received change the tty
 					// and return to the old one
 					// this is a workaround to update the display correctly
-					sprintf(command_buf, "/bin/chvt %s", currConsole);
+					sprintf(command_buf, CHVT, currConsole);
 //					printf("/bin/chvt %s\n",currConsole);
-					system("/bin/chvt 12");
+					system(to_temp_tty);
 					system(command_buf);
 				}
 			}
@@ -154,7 +162,7 @@ int main( int argc, char** argv )
 			{//if timeout reached and display is on: turn it off
 				if(HDMI_ON == 1) {
 					printf("power down HDMI \n");
-					system ("/opt/vc/bin/tvservice -o");
+					system (TVSERVICEOFF);
 					HDMI_ON = 0;
 				}
 			} else {
