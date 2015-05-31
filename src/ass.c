@@ -39,8 +39,8 @@ SOFTWARE.
 #define MOUSEFILE "/dev/input/mice"
 #define KEYBOARDFILE "/dev/input/event0"
 #define FGCONSOLE "/bin/fgconsole"
-#define TVSERVICEON "/opt/vc/bin/tvservice -p"
-#define TVSERVICEOFF "/opt/vc/bin/tvservice -o"
+#define SCREEN_ON "/opt/vc/bin/tvservice -p"
+#define SCREEN_OFF "/opt/vc/bin/tvservice -o"
 #define CHVT "/bin/chvt %s"
 
 /*
@@ -161,7 +161,7 @@ int main( int argc, char** argv )
 				bool success = getCurrConsole(fp_fgconsole, currConsole);
 
 				//turn the screen on
-				system (TVSERVICEON);
+				system (SCREEN_ON);
 				system ("sudo xrefresh");
 				if(success) { 
 					//if the current tty could be received change the tty
@@ -183,7 +183,7 @@ int main( int argc, char** argv )
 			{//if timeout reached and display is on: turn it off
 				if(HDMI_ON) {
 					printf("power down HDMI \n");
-					system (TVSERVICEOFF);
+					system (SCREEN_OFF);
 					HDMI_ON = false;
 				}
 			} else {
