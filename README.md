@@ -1,5 +1,5 @@
 # ass
-This Program to turns off the display automatically after a period of inactivity and turn it on when an key/mouse event was triggered.
+This Program turns off the display automatically after a period of inactivity and turns it on again when an key/mouse event was triggered.
 
 In the ```bin/``` folder exists a precompiled version for the RaspberryPi with Raspbian.
 
